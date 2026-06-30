@@ -1,4 +1,4 @@
-# gh-field-graph
+# osint-field-graph
 
 A Claude Code / agent **skill** that maps the core people of a technical field
 on GitHub.

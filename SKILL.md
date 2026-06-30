@@ -1,5 +1,5 @@
 ---
-name: gh-field-graph
+name: osint-field-graph
 description: >
   Map the core people of a technical field on GitHub. Given a few seed accounts,
   it expands their forward-following network (BFS) and ranks everyone by
@@ -11,7 +11,7 @@ description: >
 allowed-tools: Bash, Read, Write
 ---
 
-# gh-field-graph
+# osint-field-graph
 
 Turn "who actually matters in technical field X on GitHub" from a guess into a
 sourced, ranked graph.
