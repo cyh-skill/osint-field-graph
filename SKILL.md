@@ -48,17 +48,18 @@ account is often a field-adjacent celebrity, not the center.
 
 ```bash
 # one round, enrich the top 20
-python3 scripts/field_graph.py "soxoj,megadose,cipher387,WebBreacher" --top 20 --enrich
+./scripts/field_graph.sh "soxoj,megadose,cipher387,WebBreacher" --top 20 --enrich
 
 # seeds from a file, 3 BFS rounds (auto-promote top emerged nodes each round)
-python3 scripts/field_graph.py @seeds.txt --rounds 3 --promote 12 --top 40 --csv out.csv
+./scripts/field_graph.sh @seeds.txt --rounds 3 --promote 12 --top 40 --csv out.csv
 ```
 
 Flags: `--cap` (max following per seed, default 100), `--rounds`,
 `--promote`, `--top`, `--enrich`, `--workers`, `--csv`.
 
-Requires the GitHub CLI (`gh`) authenticated (`gh auth status`). Uses only
-public REST endpoints (`users/{u}/following`, `users/{u}`).
+Pure shell — **no Python, no runtime**. Only needs the GitHub CLI (`gh`)
+authenticated (`gh auth status`) plus standard coreutils (`awk`, `sort`,
+`xargs`). Uses only public REST endpoints (`users/{u}/following`, `users/{u}`).
 
 ## Reading the output
 

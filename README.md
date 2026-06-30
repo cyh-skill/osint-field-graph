@@ -15,14 +15,17 @@ usually **not** the highest-follower account.
 ```bash
 gh auth status   # GitHub CLI must be authenticated
 
-python3 scripts/field_graph.py "soxoj,megadose,cipher387,WebBreacher" --top 20 --enrich
+./scripts/field_graph.sh "soxoj,megadose,cipher387,WebBreacher" --top 20 --enrich
 ```
 
 Multi-round BFS from a seed file:
 
 ```bash
-python3 scripts/field_graph.py @seeds.txt --rounds 3 --promote 12 --top 40 --csv out.csv
+./scripts/field_graph.sh @seeds.txt --rounds 3 --promote 12 --top 40 --csv out.csv
 ```
+
+> **No Python, no runtime.** Pure shell — needs only `gh` (authenticated) and
+> standard coreutils (`awk`, `sort`, `xargs`). Parallel fetch via `xargs -P`.
 
 | flag | meaning | default |
 |------|---------|---------|
