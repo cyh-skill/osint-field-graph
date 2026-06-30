@@ -1,0 +1,7 @@
+# OSINT field seeds (example)
+soxoj
+megadose
+cipher387
+WebBreacher
+mxrch
+GONZOsint
