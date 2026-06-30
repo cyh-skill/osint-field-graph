@@ -61,6 +61,27 @@ Pure shell — **no Python, no runtime**. Only needs the GitHub CLI (`gh`)
 authenticated (`gh auth status`) plus standard coreutils (`awk`, `sort`,
 `xargs`). Uses only public REST endpoints (`users/{u}/following`, `users/{u}`).
 
+## Cross-verify, routed by persona
+
+GitHub is one face. To confirm who a node really is, route them to the source
+that *authoritatively* covers their kind of person — not "check every site":
+
+- **code** → GitHub / npm / PyPI (signed packages, repo self-intro)
+- **research** → arXiv / Semantic Scholar / OpenAlex / ORCID (signed papers)
+- **influencer / 种粉** → 小红书 / 微博 / B站 / X / YouTube (via `web-access`)
+- **business / 创始人** → LinkedIn / Crunchbase / gsxt.gov.cn / 天眼查
+
+```bash
+./scripts/cross_verify.sh --gh sokra                 # auto-detect persona from GitHub
+./scripts/cross_verify.sh --name "Tri Dao" --persona research   # force a route
+```
+
+`cross_verify.sh` auto-detects persona from the GitHub bio/company, prints the
+self-published X handle + site (GitHub's `twitter_username` field — no scraping),
+and queries the routed source (GitHub/arXiv live; social/business emit a
+`web-access` plan since they need a logged-in browser). Full routing table and
+the self-signed-only rule: [`SOURCES.md`](SOURCES.md).
+
 ## Reading the output
 
 - **Resolution scales with seeds.** ~12 seeds tops out around 3 cross-sources;
