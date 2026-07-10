@@ -1,57 +1,70 @@
-# osint-field-graph
+# field-graph
 
-A Claude Code / agent **skill** that maps the core people of a technical field
-on GitHub.
+A Claude Code / agent **skill** that finds the *real* core people of **any** field
+— by mapping its endorsement graph, not by follower count.
 
-Give it a few seed accounts in a field; it expands their **forward-following
-network** and ranks everyone by **cross-source count** — how many *independent*
-seeds follow each person. The result surfaces a field's real center, which is
-usually **not** the highest-follower account.
+Generalized from a GitHub-only tool (`osint-field-graph`) into a **five-stage,
+multi-platform method**. The graph algorithm is one thing; the platform it runs on
+is a swappable **provider**.
 
-> in-degree (followers) = fame &nbsp;·&nbsp; cross-source = peer recognition inside the niche
+> in-degree (followers/citations) = fame  ·  cross-source = peer recognition in the niche
+
+Method adapted from SimmerChan, *用 Agent 自动扒了一遍知乎推荐系统领域的大V*
+([zhuanlan.zhihu.com/p/2052179994911171124](https://zhuanlan.zhihu.com/p/2052179994911171124)).
+
+## The method (see [`SKILL.md`](SKILL.md))
+
+1. **Define the field** — and its disqualifier (the domain-filter yardstick).
+2. **Route to a platform** — where does this field leave a public endorsement
+   graph? → picks the provider. See [`PLATFORMS.md`](PLATFORMS.md).
+3. **Seed the top ~50** — `seed_bootstrap.sh` (GitHub topic / OpenAlex field), or a
+   platform 榜单 via the web-access skill.
+4. **Expand + rank** — `field_graph.sh`: forward BFS + cross-source ranking, then
+   the manual domain filter.
+5. **Cross-verify by persona** — `cross_verify.sh` + [`SOURCES.md`](SOURCES.md).
 
 ## Quick start
 
 ```bash
-gh auth status   # GitHub CLI must be authenticated
+# GitHub (code fields) — bootstrap seeds, then rank
+scripts/seed_bootstrap.sh --provider github --topic osint --n 40 --contributors > seeds.txt
+scripts/field_graph.sh @seeds.txt --rounds 3 --promote 12 --top 40 --enrich
 
-./scripts/field_graph.sh "soxoj,megadose,cipher387,WebBreacher" --top 20 --enrich
+# OpenAlex (research fields)
+scripts/seed_bootstrap.sh --provider openalex --field "natural language processing" --mailto you@x.com > seeds.txt
+scripts/field_graph.sh @seeds.txt --provider openalex --mailto you@x.com --top 30 --enrich
+
+# Any other platform: script one hop with cmd:, or harvest via web-access then --edges
+scripts/field_graph.sh @seeds.txt --provider 'cmd:<command printing node {}\047s neighbors>'
+scripts/field_graph.sh myfield --edges harvested_follows.tsv --top 40
 ```
 
-Multi-round BFS from a seed file:
+## Providers
 
-```bash
-./scripts/field_graph.sh @seeds.txt --rounds 3 --promote 12 --top 40 --csv out.csv
-```
+| provider | edge = | needs |
+|---|---|---|
+| `github` (default) | who a user **follows** | `gh` (authenticated) |
+| `openalex` | a researcher's **co-authors** | `curl`, `jq` |
+| `cmd:TPL` | stdout of `TPL` with `{}` = node | anything scriptable |
+| `--edges FILE` | pre-collected `seed<TAB>neighbor` TSV | web-access harvest |
 
-> **No Python, no runtime.** Pure shell — needs only `gh` (authenticated) and
-> standard coreutils (`awk`, `sort`, `xargs`). Parallel fetch via `xargs -P`.
+> **No Python, no runtime.** Pure shell — coreutils + the chosen provider's tool.
 
-| flag | meaning | default |
-|------|---------|---------|
-| `--cap` | max `following` fetched per seed | 100 |
-| `--rounds` | BFS rounds (each extra round auto-promotes top emerged nodes) | 1 |
-| `--promote` | new seeds added per extra round | 10 |
-| `--top` | rows printed | 30 |
-| `--enrich` | fetch followers/name/bio for printed rows | off |
-| `--workers` | parallel `gh` calls | 8 |
-| `--csv` | dump full ranking to CSV | — |
+## How it differs from existing "find people" tools
 
-## How it works
-
-1. **Seeds** → 2. **Forward BFS** over `following` → 3. **Cross-source ranking**
-→ 4. **Domain filter** (manual; raw ranking drifts toward field-adjacent
-celebrities as it scales) → 5. **Enrich & report**.
-
-See [`SKILL.md`](SKILL.md) for the full method and the **Scope & Red Lines**.
+Most tools rank by **fame/volume** (followers, engagement, contributions — 千瓜,
+蝉妈妈, OSS Insight) or **match a profile to a keyword/description** (Juicebox /
+PeopleGPT, Exa Websets, Clay). This ranks by **cross-source endorsement** to surface
+the *peer-recognized* core — who is often **not** the most famous. The only
+method-cousins are academic citation-graph tools (ResearchRabbit, Connected
+Papers), and those only cover academia; this runs the same idea on **any** field.
 
 ## Scope
 
-Maps **publicly-active contributors** from public profiles, public follow
-graphs, and signed open-source work. It is **not** a people-deanonymization
-tool: it takes public accounts as seeds (never a phone number / private email),
-respects deliberate anonymity, and does not attach private attributes to people.
-Read [`SKILL.md`](SKILL.md#scope--red-lines) before using.
+Maps publicly-active contributors from public profiles, public follow/citation
+graphs, and signed work. **Not** a deanonymization tool: public accounts as seeds
+(never a phone/private email), respects deliberate anonymity, attaches no private
+attributes. Read [`SKILL.md`](SKILL.md#scope--red-lines) before using.
 
 ## License
 

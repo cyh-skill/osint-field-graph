@@ -1,0 +1,9 @@
+# Example seeds — NLP / LLM research (provider: openalex)
+# Names are auto-resolved to OpenAlex author ids at run time — CHECK the echo!
+# (ambiguous names may resolve wrong; prefer pasting author ids A... for precision.)
+# Regenerate a fresh set with:
+#   seed_bootstrap.sh --provider openalex --field "natural language processing" > seeds.txt
+Christopher D. Manning
+Yoshua Bengio
+Kyunghyun Cho
+Tri Dao

@@ -1,0 +1,10 @@
+# Example seeds — OSINT tooling on GitHub (provider: github)
+# Regenerate a fresh, larger set with:
+#   seed_bootstrap.sh --provider github --topic osint --n 40 --contributors > seeds.txt
+soxoj
+megadose
+cipher387
+WebBreacher
+mxrch
+sundowndev
+laramies
