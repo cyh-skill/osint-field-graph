@@ -1,0 +1,13 @@
+{
+  "name": "field-graph",
+  "description": "Find the *real* core people of ANY field by mapping its endorsement graph, not follower count: seed the field's top accounts → BFS their forward network → rank everyone by cross-source endorsement count. Works on GitHub follows, OpenAlex co-authorship, or any platform via a pluggable provider. Public, self-published data only.",
+  "version": "1.0.0",
+  "author": {
+    "name": "cyh-skill"
+  },
+  "homepage": "https://github.com/cyh-skill/field-graph",
+  "repository": "https://github.com/cyh-skill/field-graph",
+  "license": "MIT",
+  "keywords": ["osint", "graph", "influence", "network", "ranking", "github", "openalex", "field-mapping"],
+  "skills": ["./"]
+}

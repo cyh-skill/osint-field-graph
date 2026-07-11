@@ -11,6 +11,9 @@ description: >
   "find the influential/key people in <ecosystem>", "领域核心人物/大V是谁",
   "找出某领域真正重要的人", "field influence graph". Public, self-published data only.
 allowed-tools: Bash, Read, Write
+metadata:
+  author: cyh (cyh-skill)
+  version: "1.0.0"
 ---
 
 # field-graph
