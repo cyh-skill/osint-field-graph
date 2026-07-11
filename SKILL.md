@@ -1,5 +1,5 @@
 ---
-name: field-graph
+name: cyh-field-graph
 description: >
   Find the *real* core people of ANY field by mapping its endorsement graph, not
   by follower count. Method: pick the platform where the field actually lives →
