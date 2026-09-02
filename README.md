@@ -105,4 +105,4 @@ attributes. Read [`SKILL.md`](SKILL.md#scope--red-lines) before using.
 
 ## License
 
-MIT
+Licensed under the [MIT License](LICENSE).
