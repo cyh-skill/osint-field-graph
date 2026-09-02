@@ -24,9 +24,10 @@ jobs:
       - name: Validate Skill package
         uses: cyh-skill/.github/actions/validate-skill@ed44478f6dd48649dd1b2ee7dd219d4af7699d8b
 
-      - name: Validate manifests and scripts
+      - name: Validate Codex and Claude Code metadata
         run: |
-          jq empty .claude-plugin/plugin.json
+          jq -e '.name == "field-graph" and .skills == ["./"]' .claude-plugin/plugin.json
+          ruby -e 'require "yaml"; d = YAML.load_file("agents/openai.yaml"); abort unless d.dig("interface", "default_prompt")&.include?("$cyh-field-graph")'
           bash -n scripts/*.sh tests/*.sh
 
       - name: Run offline shell tests

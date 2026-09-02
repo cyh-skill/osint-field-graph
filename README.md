@@ -1,7 +1,8 @@
 # field-graph
 
-A Claude Code / agent **skill** that finds the *real* core people of **any** field
-— by mapping its endorsement graph, not by follower count.
+A Codex and Claude Code **Skill** that finds the *real* core people of **any**
+field by mapping its endorsement graph, not by follower count. In Codex, invoke
+it as `$cyh-field-graph`.
 
 Generalized from a GitHub-only tool (`osint-field-graph`) into a **five-stage,
 multi-platform method**. The graph algorithm is one thing; the platform it runs on
@@ -9,8 +10,41 @@ is a swappable **provider**.
 
 > in-degree (followers/citations) = fame  ·  cross-source = peer recognition in the niche
 
-Method adapted from SimmerChan, *用 Agent 自动扒了一遍知乎推荐系统领域的大V*
-([zhuanlan.zhihu.com/p/2052179994911171124](https://zhuanlan.zhihu.com/p/2052179994911171124)).
+Method adapted from [SimmerChan's Zhihu field-mapping case study](https://zhuanlan.zhihu.com/p/2052179994911171124).
+
+## Install in Codex
+
+Clone the repository into the Codex Skills directory:
+
+```bash
+gh repo clone cyh-skill/field-graph ~/.agents/skills/cyh-field-graph
+```
+
+Start a new Codex conversation after installation so the Skill is rediscovered.
+GitHub analysis requires an authenticated `gh`; OpenAlex analysis requires `curl`
+and `jq`.
+
+## Use with Claude Code
+
+Claude Code compatibility is provided by `.claude-plugin/plugin.json`; the
+manifest points to the repository-root `SKILL.md`. Clone the repository and load
+it through your existing Claude Code plugin workflow. The same scripts, provider
+limits, public-data scope, and safety rules apply in both clients.
+
+Invoke a personal Skill as `/cyh-field-graph`; when installed as the bundled
+plugin, use `/field-graph:cyh-field-graph`.
+
+## Use in Codex
+
+Invoke the Skill explicitly with a field boundary and, when useful, a disqualifier:
+
+```text
+$cyh-field-graph 找出 React 状态管理生态真正的核心人物，但排除泛前端明星。
+```
+
+Codex follows the five-stage method below, selects the appropriate provider, runs
+the scripts, domain-filters the ranking, and reports sourced results. The direct
+shell examples remain available for inspection, automation, and troubleshooting.
 
 ## The method (see [`SKILL.md`](SKILL.md))
 
@@ -23,7 +57,7 @@ Method adapted from SimmerChan, *用 Agent 自动扒了一遍知乎推荐系统�
    the manual domain filter.
 5. **Cross-verify by persona** — `cross_verify.sh` + [`SOURCES.md`](SOURCES.md).
 
-## Quick start
+## Direct script usage
 
 ```bash
 # GitHub (code fields) — bootstrap seeds, then rank

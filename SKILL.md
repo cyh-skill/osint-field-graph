@@ -21,10 +21,14 @@ metadata:
 Turn "who actually matters in field X" from a guess into a sourced, ranked graph —
 **for any field, on whatever platform that field actually congregates on.**
 
-Method adapted from SimmerChan, *用 Agent 自动扒了一遍知乎推荐系统领域的大V*
-(zhuanlan.zhihu.com/p/2052179994911171124) — which mapped Zhihu's rec-sys field.
-This skill generalizes it: the graph algorithm is one thing, the platform it runs
-on is a swappable **provider**.
+This Skill supports both Codex and Claude Code. In Codex, invoke it as
+`$cyh-field-graph`; install the repository as `cyh-field-graph` under
+`~/.agents/skills/`, with `agents/openai.yaml` providing Codex interface metadata.
+Claude Code uses `.claude-plugin/plugin.json` and the `allowed-tools` frontmatter
+above. Both clients follow the same workflow and safety boundaries. The method is
+adapted from SimmerChan's Zhihu field-mapping case study
+(zhuanlan.zhihu.com/p/2052179994911171124). It generalizes that case: the graph
+algorithm is one thing, the platform it runs on is a swappable **provider**.
 
 ## Core idea
 
@@ -45,7 +49,7 @@ high-signal (30-40% on-topic); their *followers* are mostly noise (3-10%).
 
 ## The pipeline — 5 stages
 
-Run these in order. Stages 1–2 are reasoning; 3–5 are the scripts.
+Run these in order. Stages 1–2 are reasoning; 3–5 use the scripts.
 
 ### 1. Define the field (定域)
 State the field boundary in one sentence, and the *disqualifier* ("… but NOT
