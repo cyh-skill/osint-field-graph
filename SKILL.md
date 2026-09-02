@@ -7,8 +7,8 @@ description: >
   by cross-source count (how many independent seeds endorse them). The center is
   usually NOT the biggest-follower name. Works on GitHub follows, academic
   co-authorship (OpenAlex), or any platform via a pluggable provider.
-  Use when: "who are the core people in <field>", "map the <topic/community>",
-  "find the influential/key people in <ecosystem>", "领域核心人物/大V是谁",
+  Use when users ask who the core people are in a field, request a map of a topic
+  or community, ask for influential people in an ecosystem, "领域核心人物/大V是谁",
   "找出某领域真正重要的人", "field influence graph". Public, self-published data only.
 allowed-tools: Bash, Read, Write
 metadata:
@@ -61,12 +61,12 @@ full routing table; the short version:
 |---|---|---|
 | open-source / dev tooling / infra | GitHub follows | `github` |
 | academic / research / a paper's field | OpenAlex co-authorship | `openalex` |
-| Chinese tech / 内容创作 / 知乎大V | Zhihu follows | `cmd:` or `--edges` (web-access) |
-| influencer / 种草 / creator | X, 小红书, 微博, B站 | `--edges` (web-access) |
-| founders / VC / business | LinkedIn, X | `--edges` (web-access) |
+| Chinese tech / 内容创作 / 知乎大V | Zhihu follows | `cmd:` or `--edges` (cyh-browser-skill) |
+| influencer / 种草 / creator | X, 小红书, 微博, B站 | `--edges` (cyh-browser-skill) |
+| founders / VC / business | LinkedIn, X | `--edges` (cyh-browser-skill) |
 
 Rule of thumb: use `github`/`openalex` when the field lives there (open API);
-otherwise collect the graph with the **web-access skill** and rank via `--edges`.
+otherwise collect the graph with **cyh-browser-skill** and rank via `--edges`.
 
 ### 3. Seed with the field's top ~50 (取种子)
 Don't hand-pick 4 accounts and hope. Get the field's head first:
@@ -79,7 +79,7 @@ scripts/seed_bootstrap.sh --provider github --topic osint --n 40 --contributors 
 scripts/seed_bootstrap.sh --provider openalex --field "natural language processing" --n 50 --mailto you@x.com > seeds.txt
 ```
 
-For API-less platforms, get the field's 榜单 / top list via the web-access skill
+For API-less platforms, get the field's 榜单 / top list via cyh-browser-skill
 (a "top rec-sys 大V" list, an awards page, a leaderboard) and save as seeds.
 **Eyeball the list** — bad seeds poison the whole graph.
 
@@ -96,7 +96,7 @@ scripts/field_graph.sh @seeds.txt --provider openalex --mailto you@x.com --top 3
 # any platform you can script one hop of:
 scripts/field_graph.sh @seeds.txt --provider 'cmd:<command that prints node {}\047s neighbors>'
 
-# platform with no API: rank a graph you harvested via web-access
+# platform with no API: rank a graph you harvested via cyh-browser-skill
 scripts/field_graph.sh field --edges harvested_follows.tsv --top 40
 ```
 
@@ -115,7 +115,7 @@ scripts/cross_verify.sh --name "Tri Dao" --persona research
 ```
 
 code → GitHub/npm/PyPI · research → arXiv/OpenAlex/ORCID · influencer → 小红书/微博/
-B站/X (web-access) · business → LinkedIn/Crunchbase/gsxt.gov.cn. Full routing +
+B站/X (cyh-browser-skill) · business → LinkedIn/Crunchbase/gsxt.gov.cn. Full routing +
 the self-signed-only rule: **[`SOURCES.md`](SOURCES.md)**.
 
 ## Providers (Stage 4 engine)
@@ -127,12 +127,15 @@ node, which nodes does it endorse?*
 |---|---|---|---|
 | `github` (default) | who a user **follows** | `gh` (authed) | login |
 | `openalex` | a researcher's **co-authors** | `curl`, `jq` | author id `A…` (or a name, auto-resolved — verify the echo) |
-| `cmd:TPL` | stdout of `TPL` with `{}` = node | whatever `TPL` uses | anything |
+| `cmd:TPL` | stdout of `TPL` with an unquoted `{}` = node | whatever `TPL` uses | anything |
 | `--edges FILE` | pre-collected `seed<TAB>neighbor` TSV | — | anything |
 
 Adding a field = adding a provider. If you can script "given X, list who X
 endorses" for a platform, `cmd:` plugs it in with zero engine changes. If the
-platform needs a logged-in browser, harvest with web-access → rank via `--edges`.
+platform needs a logged-in browser, harvest with cyh-browser-skill → rank via `--edges`.
+Keep the `{}` placeholder unquoted: the engine replaces it with a quoted positional
+argument. Provider calls default to a 60-second timeout and 1 MiB output limit per
+seed; use `--timeout` or `--max-output-kb` when a trusted provider needs more.
 
 Pure shell — **no Python, no runtime**. `github` needs `gh` authenticated
 (`gh auth status`); `openalex` needs `curl` + `jq`. Public REST endpoints only.

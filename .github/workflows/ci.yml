@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Validate Skill package
+        uses: cyh-skill/.github/actions/validate-skill@ed44478f6dd48649dd1b2ee7dd219d4af7699d8b
+
+      - name: Validate manifests and scripts
+        run: |
+          jq empty .claude-plugin/plugin.json
+          bash -n scripts/*.sh tests/*.sh
+
+      - name: Run offline shell tests
+        run: ./tests/test_scripts.sh

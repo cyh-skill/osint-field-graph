@@ -1,0 +1,4 @@
+interface:
+  display_name: "Field Graph"
+  short_description: "Map peer-endorsed core people in any field"
+  default_prompt: "Use $cyh-field-graph to identify the peer-endorsed core people in this field from public, self-published data."

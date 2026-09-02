@@ -18,7 +18,7 @@ Method adapted from SimmerChan, *用 Agent 自动扒了一遍知乎推荐系统�
 2. **Route to a platform** — where does this field leave a public endorsement
    graph? → picks the provider. See [`PLATFORMS.md`](PLATFORMS.md).
 3. **Seed the top ~50** — `seed_bootstrap.sh` (GitHub topic / OpenAlex field), or a
-   platform 榜单 via the web-access skill.
+   platform 榜单 via cyh-browser-skill.
 4. **Expand + rank** — `field_graph.sh`: forward BFS + cross-source ranking, then
    the manual domain filter.
 5. **Cross-verify by persona** — `cross_verify.sh` + [`SOURCES.md`](SOURCES.md).
@@ -34,7 +34,7 @@ scripts/field_graph.sh @seeds.txt --rounds 3 --promote 12 --top 40 --enrich
 scripts/seed_bootstrap.sh --provider openalex --field "natural language processing" --mailto you@x.com > seeds.txt
 scripts/field_graph.sh @seeds.txt --provider openalex --mailto you@x.com --top 30 --enrich
 
-# Any other platform: script one hop with cmd:, or harvest via web-access then --edges
+# Any other platform: script one hop with cmd:, or harvest via cyh-browser-skill then --edges
 scripts/field_graph.sh @seeds.txt --provider 'cmd:<command printing node {}\047s neighbors>'
 scripts/field_graph.sh myfield --edges harvested_follows.tsv --top 40
 ```
@@ -45,8 +45,11 @@ scripts/field_graph.sh myfield --edges harvested_follows.tsv --top 40
 |---|---|---|
 | `github` (default) | who a user **follows** | `gh` (authenticated) |
 | `openalex` | a researcher's **co-authors** | `curl`, `jq` |
-| `cmd:TPL` | stdout of `TPL` with `{}` = node | anything scriptable |
-| `--edges FILE` | pre-collected `seed<TAB>neighbor` TSV | web-access harvest |
+| `cmd:TPL` | stdout of `TPL` with an unquoted `{}` = node | anything scriptable |
+| `--edges FILE` | pre-collected `seed<TAB>neighbor` TSV | cyh-browser-skill harvest |
+
+Keep the `cmd:` placeholder unquoted; the engine passes each node as a quoted
+positional argument. Provider calls default to 60 seconds and 1 MiB per seed.
 
 > **No Python, no runtime.** Pure shell — coreutils + the chosen provider's tool.
 
