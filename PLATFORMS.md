@@ -30,19 +30,20 @@ runs' CSVs and re-rank.
 - **Scriptable but not built-in → `cmd:`.** If you can write one command that, given
   a node, prints who it endorses (e.g. an authenticated API you have a token for),
   drop it in as `--provider 'cmd:<cmd with unquoted {}>'` — no engine change.
-- **No → harvest with cyh-browser-skill, then `--edges`.** X, 小红书, 微博, B站,
-  LinkedIn, 知乎 all block static scraping and need a logged-in browser. Use the
-  **cyh-browser-skill** to walk each seed's follow list into a `seed<TAB>neighbor`
-  TSV, then rank it: `field_graph.sh <field> --edges harvested.tsv`.
+- **No → choose an input route for `--edges`.** With a user-requested or accepted
+  browser-collection lane, use **cyh-browser-skill** to walk each seed's follow
+  list into a `seed<TAB>neighbor` TSV. Otherwise accept a user-supplied TSV and
+  report the unavailable collection surface. Rank either input with
+  `field_graph.sh <field> --edges harvested.tsv`.
 
 ## Harvesting an API-less graph (the `--edges` path)
 
-For platforms in the "No" row, the collection is browser work, the ranking is this
-tool. Pattern:
+For platforms in the "No" row, an authorized browser lane performs collection and
+this tool performs ranking. Pattern:
 
 1. Get the field's top ~50 seeds — a platform 榜单 (千瓜/蝉妈妈/新榜/Substack
    leaderboard), a curated X List, or a hand-picked expert set. Save `seeds.txt`.
-2. With **cyh-browser-skill**, for each seed open its *following* page and
+2. With a selected **cyh-browser-skill** lane, for each seed open its *following* page and
    collect the accounts it follows. Append `seed<TAB>followee` lines to a TSV.
    (Forward following only — reverse followers are 3-10% signal; skip them.)
 3. Rank: `field_graph.sh <field> --edges collected.tsv --top 40`.
@@ -59,8 +60,10 @@ work only; stop at deliberate anonymity; never pivot from a private identifier.
   is **co-authorship** (collaboration hubs); it skews toward big-lab PIs — apply
   the domain filter, or swap to a citation-based `cmd:` for a directed signal.
 - **知乎** — the source article's platform. `/api/v4/members/{id}` (with login)
-  returns structured employments/education/badge; follows drive the graph. Needs
-  cyh-browser-skill. Verify real names via GitHub/PyPI/arXiv (`SOURCES.md`).
-- **X / 小红书 / 微博 / B站 / LinkedIn** — logged-in browser only; `--edges` path.
+  returns structured employments/education/badge; follows drive the graph. A
+  selected browser lane uses cyh-browser-skill. Verify real names via
+  GitHub/PyPI/arXiv (`SOURCES.md`).
+- **X / 小红书 / 微博 / B站 / LinkedIn** — an authorized logged-in browser lane or
+  user-supplied data feeds the `--edges` path.
   Chinese KOL 榜单 tools (千瓜/蝉妈妈/新榜) are good *seed* sources but rank by
   reach, not by cross-source — use them to seed, then let this tool find the core.

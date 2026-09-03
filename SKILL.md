@@ -1,11 +1,11 @@
 ---
 name: cyh-field-graph
 description: >
-  Find the *real* core people of ANY field by mapping its endorsement graph, not
-  by follower count. Method: pick the platform where the field actually lives →
+  Find the peer-endorsed core people of a field by mapping its endorsement graph
+  and ranking cross-source recognition. Method: pick the platform where the field actually lives →
   seed with its top accounts → expand their forward network (BFS) → rank everyone
   by cross-source count (how many independent seeds endorse them). The center is
-  usually NOT the biggest-follower name. Works on GitHub follows, academic
+  is often a specialist rather than the biggest-follower name. Works on GitHub follows, academic
   co-authorship (OpenAlex), or any platform via a pluggable provider.
   Use when users ask who the core people are in a field, request a map of a topic
   or community, ask for influential people in an ecosystem, "领域核心人物/大V是谁",
@@ -65,15 +65,17 @@ full routing table; the short version:
 |---|---|---|
 | open-source / dev tooling / infra | GitHub follows | `github` |
 | academic / research / a paper's field | OpenAlex co-authorship | `openalex` |
-| Chinese tech / 内容创作 / 知乎大V | Zhihu follows | `cmd:` or `--edges` (cyh-browser-skill) |
-| influencer / 种草 / creator | X, 小红书, 微博, B站 | `--edges` (cyh-browser-skill) |
-| founders / VC / business | LinkedIn, X | `--edges` (cyh-browser-skill) |
+| Chinese tech / 内容创作 / 知乎大V | Zhihu follows | `cmd:` or authorized browser collection + `--edges` |
+| influencer / 种草 / creator | X, 小红书, 微博, B站 | authorized browser collection or supplied `--edges` |
+| founders / VC / business | LinkedIn, X | authorized browser collection or supplied `--edges` |
 
-Rule of thumb: use `github`/`openalex` when the field lives there (open API);
-otherwise collect the graph with **cyh-browser-skill** and rank via `--edges`.
+Rule of thumb: use `github`/`openalex` when the field lives there (open API).
+For API-less platforms, select a browser-collection lane when the user requested
+or accepted browser collection; otherwise accept user-supplied `--edges` data and
+report the unavailable collection surface.
 
 ### 3. Seed with the field's top ~50 (取种子)
-Don't hand-pick 4 accounts and hope. Get the field's head first:
+Bootstrap roughly 40–50 representative head accounts before expansion:
 
 ```bash
 # GitHub: a topic → owners + top contributors of its top repos
@@ -83,8 +85,9 @@ scripts/seed_bootstrap.sh --provider github --topic osint --n 40 --contributors 
 scripts/seed_bootstrap.sh --provider openalex --field "natural language processing" --n 50 --mailto you@x.com > seeds.txt
 ```
 
-For API-less platforms, get the field's 榜单 / top list via cyh-browser-skill
-(a "top rec-sys 大V" list, an awards page, a leaderboard) and save as seeds.
+For API-less platforms with an authorized browser-collection lane, get the field's
+榜单 / top list via cyh-browser-skill (a "top rec-sys 大V" list, an awards page,
+a leaderboard) and save it as seeds.
 **Eyeball the list** — bad seeds poison the whole graph.
 
 ### 4. Expand + rank (扩散 + 交叉信源排序)
@@ -100,7 +103,7 @@ scripts/field_graph.sh @seeds.txt --provider openalex --mailto you@x.com --top 3
 # any platform you can script one hop of:
 scripts/field_graph.sh @seeds.txt --provider 'cmd:<command that prints node {}\047s neighbors>'
 
-# platform with no API: rank a graph you harvested via cyh-browser-skill
+# platform with no API: rank an authorized browser harvest or supplied edge file
 scripts/field_graph.sh field --edges harvested_follows.tsv --top 40
 ```
 
@@ -135,8 +138,9 @@ node, which nodes does it endorse?*
 | `--edges FILE` | pre-collected `seed<TAB>neighbor` TSV | — | anything |
 
 Adding a field = adding a provider. If you can script "given X, list who X
-endorses" for a platform, `cmd:` plugs it in with zero engine changes. If the
-platform needs a logged-in browser, harvest with cyh-browser-skill → rank via `--edges`.
+endorses" for a platform, `cmd:` plugs it in with zero engine changes. For a
+logged-in platform, an authorized browser-collection lane or user-supplied data
+feeds `--edges`.
 Keep the `{}` placeholder unquoted: the engine replaces it with a quoted positional
 argument. Provider calls default to a 60-second timeout and 1 MiB output limit per
 seed; use `--timeout` or `--max-output-kb` when a trusted provider needs more.

@@ -24,8 +24,8 @@ matched sources, not all.
 | GitHub / npm / PyPI / crates.io | public API (`gh`, curl) | direct |
 | arXiv | public API (`https://export.arxiv.org/api/query`) | author search |
 | Semantic Scholar / OpenAlex / DBLP / ORCID | public API | may need an API key / be rate-limited on shared IPs |
-| 小红书 / 微博 / B站 / 抖音 / X / LinkedIn | **browser + login** | use `cyh-browser-skill`; static scraping is blocked |
-| 天眼查 / 企查查 | browser; 官方 gsxt.gov.cn is free | business registry |
+| 小红书 / 微博 / B站 / 抖音 / X / LinkedIn | **selected browser + login** | use `cyh-browser-skill` after browser collection is requested or accepted; otherwise use supplied data |
+| 天眼查 / 企查查 | selected browser lane; 官方 gsxt.gov.cn is free | business registry |
 
 ## The one rule that does not change
 
